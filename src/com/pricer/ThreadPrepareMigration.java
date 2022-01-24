@@ -30,8 +30,6 @@ import org.w3c.dom.NodeList;
 import com.database.OperationOnDBSource;
 import com.file.OperationOnFile;
 
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbFile;
 
 /**
  *
@@ -82,9 +80,9 @@ public class ThreadPrepareMigration implements Runnable{
 	                  "Thread was interrupted, Failed to complete operation");
 	            }
 		
-		logger.info("Starting Application MigrationCastorama V1.0");
+		logger.info("Starting Application ExtractInfra V1.0");
 
-		try {
+/*		try {
 			ini = new Wini(new File("preference.ini"));
 		} catch (InvalidFileFormatException e1) {
 			
@@ -97,11 +95,14 @@ public class ThreadPrepareMigration implements Runnable{
 			logger.fatal("Unable to Read ini File : preference.ini ==> " + e1.getMessage());
 			logger.fatal("Exit Application ...");
 			System.exit(1);
-		}
+		}*/
 
-		String FolderForExtractedData = ini.get("SERVER", "PRICER_RESULT_FOLDER");
+		//String FolderForExtractedData = ini.get("SERVER", "PRICER_RESULT_FOLDER");
 
-		String hostSource = ini.get("MYSQL_SOURCE", "HOSTNAME");
+			 String FolderForExtractedData = System.getProperty("user.dir");
+			 System.out.println(FolderForExtractedData);
+
+		//String hostSource = ini.get("MYSQL_SOURCE", "HOSTNAME");
 		System.out.println("Folder = " + FolderForExtractedData);
 
 		File Ffolder = new File(FolderForExtractedData);
@@ -123,16 +124,19 @@ public class ThreadPrepareMigration implements Runnable{
 			switch (ireleaseName) {
 			case 1: // < R5.4.13
 				
-				logger.info("getting item list...");
-				List<Item> lstItem = pricerDB.getItemList("select * from item");
+/*				logger.info("getting item list...");
+				List<Item> lstItem = pricerDB.getItemList("select * from item");*/
 
 				logger.info("getting subcell List...");
 				List<Subcell> lstSubcell = pricerDB.getSubcellListFrom_inf_R5_4_13("select * from subcell");
+
+				logger.info("getting geostore List...");
+				List<GeoStore> lstGeoStore = pricerDB.getGeoStoreList("select * from geo_store order by ID DESC LIMIT 10");
 				
 
 				logger.info("getting subcell TRXMAP List...");
 				List<SubcellTRXMap> lstSubcellTRXMap = pricerDB.getSubcellListTRXMAPFrom_inf_R5_4_13(
-						"SELECT * FROM subcelltrxmap,`transceiver` WHERE `transceiver`.`TRXID`=`subcelltrxmap`.`SCMTRXIDREF`");
+						"SELECT * FROM subcelltrxmap,`transceiver` WHERE `transceiver`.`ID`=`subcelltrxmap`.`TRXID`");
 				
 				
 				logger.info("getting Base Station List...");
@@ -192,14 +196,15 @@ public class ThreadPrepareMigration implements Runnable{
 					}
 
 				}
-				
+/*
 				
 				
 				logger.info("Reading Declaration.jsp for ALIAS...");
 				
 				try {
 				
-				File TestFile = new File("\\\\"+hostSource+"\\Pricer\\Tomcat\\webapps\\mobile1\\Declaration.jsp");
+				//File TestFile = new File("\\\\"+hostSource+"\\Pricer\\Tomcat\\webapps\\mobile1\\Declaration.jsp");
+					File TestFile = new File("F:\\R3File\\Declaration.jsp");
 				System.out.println(TestFile.getPath());
 				logger.info(TestFile.getPath());
 					
@@ -215,7 +220,8 @@ public class ThreadPrepareMigration implements Runnable{
 				
 				//System.out.println("File Declaration.jsp seems to be existing ... continue");
 				
-				FileReader R3MobileFile = new FileReader("\\\\"+hostSource+"\\Pricer\\Tomcat\\webapps\\mobile1\\Declaration.jsp");
+				FileReader R3MobileFile = new FileReader("F:\\R3File\\Declaration.jsp");
+				//FileReader R3MobileFile = new FileReader("\\\\"+hostSource+"\\Pricer\\Tomcat\\webapps\\mobile1\\Declaration.jsp");
 				BufferedReader BuffR3MobileFile = new BufferedReader(R3MobileFile);
 				
 				String ReadLine = BuffR3MobileFile.readLine();
@@ -265,13 +271,13 @@ public class ThreadPrepareMigration implements Runnable{
 				
 				for (int i=0;  i<(StSubcell.length); i++) { 
 
-					completeLineLD.append("UPDATE `link_department` set `ALIAS`='" + StClient[i].replaceAll("à", "a").replaceAll("é","e") + "' WHERE `ID`='" + StSubcell[i] + "';\r\n");
+					completeLineLD.append("UPDATE `link_department` set `ALIAS`='"+StClient[i].replaceAll("ï¿½", "a").replaceAll("ï¿½","e")+"' WHERE `ID`='"+StSubcell[i].trim()+"';\r\n");
 	
 				}
 				
 				for(int i=0; i<(StHostName.length); i++){
 					
-					completeLinePrint.append("UPDATE `printhostconfiguration` set `ALIAS` = '" +StPrinter[i] + "' WHERE `HOSTNAME`='" + StHostName[i] + "';\r\n");
+					completeLinePrint.append("UPDATE `printhostconfiguration` set `ALIAS` = '"+StPrinter[i].trim()+"' WHERE `HOSTNAME`='"+StHostName[i]+"';\r\n");
 				}
 				
 				completeLinePrint.append("UPDATE `printhostconfiguration` set `ALIAS` = 'default', `HOSTNAME` = 'default' WHERE `HOSTNAME`='127.0.0.1';\r\n");
@@ -297,19 +303,20 @@ public class ThreadPrepareMigration implements Runnable{
 				} catch (Exception e) {
 					logger.error("##########Problem with Declaration.jsp  : " + e.getMessage());
 					System.exit(0);
-				}
+				}*/
 				
 				
 				
 				
-				try {
+			/*	try {
 					
 					logger.info("Start Read HostPrinterMapping.xml");
 					logger.info("Reading File HostPrinterMapping.xml");			
 					
 
 					
-					File R3FileName = new File("\\\\"+hostSource+"\\Pricer\\R3Server\\config\\HostPrinterMapping.xml");
+					File R3FileName = new File("F:\\R3File\\HostPrinterMapping.xml");
+					//File R3FileName = new File("\\\\"+hostSource+"\\Pricer\\R3Server\\config\\HostPrinterMapping.xml");
 					System.out.println(R3FileName.getPath());
 					logger.info(R3FileName.getPath());
 					
@@ -389,17 +396,17 @@ public class ThreadPrepareMigration implements Runnable{
 				} catch (Exception e) {
 					logger.error("##########Problem with HostPrinterMapping.xml  : " + e.getMessage());
 					System.exit(0);
-				}
+				}*/
 				
 				
 				
 				
-				logger.info("Create ITEM.i1 file for full item...");
-				new OperationOnFile(FolderForExtractedData + "\\item.i1").createFileExportSQLItem(lstItem);
+				/*logger.info("Create ITEM.i1 file for full item...");
+				new OperationOnFile(FolderForExtractedData + "\\item.i1").createFileExportSQLItem(lstItem);*/
 				
 
 				logger.info("Create Export File for LinkDepartment...");
-				new OperationOnFile(FolderForExtractedData + "\\LinkDepartment.sql")
+				new OperationOnFile(FolderForExtractedData + "/Result/LinkDepartment.sql")
 						.createFileExportSQLLinkDepartment(mapLinkDepartment);
 
 				logger.info("Getting Transceiver List...");
@@ -407,29 +414,37 @@ public class ThreadPrepareMigration implements Runnable{
 						.getTRXListFrom_inf_R5_4_13("select * from transceiver");
 
 				logger.info("Create Export File for Transceiver List...");
-				new OperationOnFile(FolderForExtractedData + "\\Transceiver.sql")
+				new OperationOnFile(FolderForExtractedData + "/Result/Transceiver.sql")
 						.createFileExportSQLTRX_inf_R5_4_13(lstTransceiverInfR413);
 
+				logger.info("Create Export File for Transceiver Location list...");
+				new OperationOnFile(FolderForExtractedData + "/Result/TrxLocation.sql")
+						.createFileExportSQLTRXLocation(lstTransceiverInfR413);
+
 				logger.info("Create Export File for Base Stations List...");
-				new OperationOnFile(FolderForExtractedData + "\\Basestation.sql")
+				new OperationOnFile(FolderForExtractedData + "/Result/Basestation.sql")
 						.createFileExportSQLBaseStations(lstBaseStation_inf_R5_4_13);
 
-				logger.info("Create Export File for Links...");
+				logger.info("Create Export file for GeoStore List...");
+				new OperationOnFile(FolderForExtractedData + "/Result/GeoStore.sql")
+						.createFileExportSQLGeoStore(lstGeoStore);
+
+/*				logger.info("Create Export File for Links...");
 				pricerDB.createFileExportLink(
 					"SELECT item.itemid,PRICERLABEL.PLBARCODE,PRICERLABEL.PLHOMESUBCELLID from item,PRICERLABEL,LINK WHERE item.itemid=link.linitemidref AND pricerlabel.plid=link.linplidref",
-					FolderForExtractedData + "\\link.i1");
+					FolderForExtractedData + "\\link.i1");*/
 				
 				
-				logger.info("Create Export File for item...");
+				//logger.info("Create Export File for item...");
 				//pricerDB.createFileExportLinkFromMysqlDump("item");
 
 				
 				// create m1 file
-				logger.info("Create " + FolderForExtractedData + "Link.m1 File for pricer Integration...");
+/*				logger.info("Create " + FolderForExtractedData + "Link.m1 File for pricer Integration...");
 				new OperationOnFile(FolderForExtractedData + "\\link.m1").createLinkm1();
 				
 				logger.info("Create " + FolderForExtractedData + "item.m1 File for Pricer Integration...");
-				new OperationOnFile(FolderForExtractedData + "\\item.m1").createItemm1();
+				new OperationOnFile(FolderForExtractedData + "\\item.m1").createItemm1();*/
 				
 				break;
 				
@@ -451,13 +466,13 @@ public class ThreadPrepareMigration implements Runnable{
 		catch (NullPointerException npex) {
 			logger.fatal("general ERROR check File and FOlders Configuration :" + npex.getCause());
 			logger.fatal("Migration Aborted !!!");
-			new OperationOnFile("PrepareMigration_begin.flag").deleteFile();
-			new OperationOnFile("PrepareMigration_ko.flag").createFlagFile();
+			new OperationOnFile("Extract_begin.flag").deleteFile();
+			new OperationOnFile("Extract_ko.flag").createFlagFile();
 			running.set(false);
 		}
 
 		
-		logger.info("Prepare Migration Terminated...");
+/*		logger.info("Prepare Migration Terminated...");
 		
 		logger.info("!!!!!!! STOPPING SERVICES ON THE OLD VM !!!!!!!");
 
@@ -495,9 +510,9 @@ public class ThreadPrepareMigration implements Runnable{
 
 			}
 
-		}
+		}*/
 		
-		statusSource = GetServiceStatus("PricerMysql",hostSource);
+/*		statusSource = GetServiceStatus("PricerMysql",hostSource);
 		System.out.println("Status service PricerMysql : " + statusSource);
 		
 		if (statusSource.equalsIgnoreCase("Running")) {
@@ -529,9 +544,9 @@ public class ThreadPrepareMigration implements Runnable{
 
 			}
 
-		}
+		}*/
 		
-		statusSource = GetServiceStatus("PricerTomcat",hostSource);
+/*		statusSource = GetServiceStatus("PricerTomcat",hostSource);
 		System.out.println("Status service PricerTomcat : " + statusSource);
 		
 		if (statusSource.equalsIgnoreCase("Running")) {
@@ -564,7 +579,7 @@ public class ThreadPrepareMigration implements Runnable{
 			}
 
 		}
-		
+		*/
 		
 		
 		
@@ -572,8 +587,8 @@ public class ThreadPrepareMigration implements Runnable{
 		
 		
 		logger.info("Flag Deleted...");
-		new OperationOnFile("PrepareMigration_begin.flag").deleteFile();
-		new OperationOnFile("PrepareMigration_ok.flag").createFlagFile();
+		new OperationOnFile("Extract_begin.flag").deleteFile();
+		new OperationOnFile("Extract_ok.flag").createFlagFile();
 		running.set(false);
 	
 
@@ -616,7 +631,7 @@ public class ThreadPrepareMigration implements Runnable{
 	}
 	
 	
-	private static String GetServiceStatus(String serviceName, String hostName) {
+/*	private static String GetServiceStatus(String serviceName, String hostName) {
 
 		try {
 
@@ -678,10 +693,10 @@ public class ThreadPrepareMigration implements Runnable{
 			return "unknown";
 			// return -1;
 		}
-	}
+	}*/
 
 	
-	public static boolean RemoteStopService(String serviceName, String hostSource) {
+/*	public static boolean RemoteStopService(String serviceName, String hostSource) {
 
 		boolean result = false;
 		String[] script = {"cmd.exe", "/c", "sc", "\\\\"+hostSource,"stop", serviceName};
@@ -704,7 +719,7 @@ public class ThreadPrepareMigration implements Runnable{
 		}
 
 		return result;
-	}
+	}*/
 
 
 

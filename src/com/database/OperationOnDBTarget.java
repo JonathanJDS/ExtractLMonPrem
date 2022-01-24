@@ -8,7 +8,6 @@ import java.io.Reader;
 import java.sql.Connection;
 
 
-import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.log4j.Logger;
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Wini;
@@ -76,7 +75,7 @@ public class OperationOnDBTarget {
 
 
 	
-	public void importData(String resultDirectory, String sqlFile) {
+/*	public void importData(String resultDirectory, String sqlFile) {
 		
 		
 		try {
@@ -93,7 +92,7 @@ public class OperationOnDBTarget {
 			e.printStackTrace();
 		}
 		
-	}
+	}*/
 
 		
 }

@@ -23,6 +23,16 @@ public class Transceiver {
    private String TRXPARTYPE;
    private String TRXTHRESHOLD;
    private String TRXIQOFFSET;
+
+    public String getTRXLOCATION() {
+        return TRXLOCATION;
+    }
+
+    public void setTRXLOCATION(String TRXLOCATION) {
+        this.TRXLOCATION = TRXLOCATION;
+    }
+
+    private String TRXLOCATION;
    
    
    

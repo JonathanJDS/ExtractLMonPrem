@@ -12,21 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.pricer.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Wini;
-
-import com.pricer.BaseStation;
-import com.pricer.Item;
-import com.pricer.LinkDepartment;
-import com.pricer.PrintHostConfiguration;
-import com.pricer.PrintModelConfiguration;
-import com.pricer.StickerSize;
-import com.pricer.StoreInfo;
-import com.pricer.Subcell;
-import com.pricer.SubcellTRXMap;
-import com.pricer.Transceiver;
 
 public class OperationOnFile {
 	static Logger logger = Logger.getLogger(OperationOnFile.class);
@@ -38,7 +28,7 @@ public class OperationOnFile {
 
 		file = new File(fileName);
 	
-		try {
+/*		try {
 			ini = new Wini(new File("preference.ini"));
 		} catch (InvalidFileFormatException e1) {
 			
@@ -51,7 +41,7 @@ public class OperationOnFile {
 			logger.fatal("Unable to Read ini File : preference.ini ==> " + e1.getMessage());
 			logger.fatal("Exit Application ...");
 			System.exit(1);
-		}
+		}*/
 	
 	}
 
@@ -181,9 +171,10 @@ public class OperationOnFile {
 	
 	public void purgeResultFolder() {
 		
-		String PRICER_RESULT_FOLDER = ini.get("SERVER", "PRICER_RESULT_FOLDER");
+		//String PRICER_RESULT_FOLDER = ini.get("SERVER", "PRICER_RESULT_FOLDER");
+		String FolderForExtractedData = System.getProperty("user.dir");
 		
-		File resultFodler = new File(PRICER_RESULT_FOLDER);
+		File resultFodler = new File(FolderForExtractedData+"//Result");
 		
 		try {
 			FileUtils.cleanDirectory(resultFodler);
@@ -194,221 +185,6 @@ public class OperationOnFile {
 		
 	}
 
-	public void createFileExportSQLStoreInfoConfiguration(List<StoreInfo> lstStoreInfo) {
-
-		PrintStream PSFileExportStoreInfoConfiguration = null;
-		int i = 0;
-
-	//	StringBuilder truncateLine = new StringBuilder();
-	//	truncateLine.append("TRUNCATE table store_information;");
-
-		try {
-			try {
-				PSFileExportStoreInfoConfiguration = new PrintStream(
-						new BufferedOutputStream(new FileOutputStream(this.file.getPath(), true)), true, encoding);
-		//		PSFileExportStoreInfoConfiguration.println(truncateLine.toString());
-			//	PSFileExportStoreInfoConfiguration.flush();
-			} catch (UnsupportedEncodingException ex) {
-				System.out.println("UnsupportedEncodingException " + file.getName());
-
-			}
-		} catch (FileNotFoundException ex) {
-			System.out.println("FileNotFoundException " + file.getName());
-
-		}
-
-		for (StoreInfo storeInfo : lstStoreInfo) {
-
-			i = i + 1;
-
-			StringBuilder completeLine = new StringBuilder();
-
-			
-			
-			
-		//	completeLine.append("REPLACE INTO `store_information`(`ID`," + "`STORE_NAME`," + "`STORE_CHAIN`,"
-			//		+ "`ADDRESS_1`," + "`ADDRESS_2`," + "`ADDRESS_3`," + "`ZIP_CODE`," + "`CITY`," + "`COUNTRY`,"
-				//	+ "`STATISTICS_ENABLED`) " + "VALUES ( ");
-			
-			completeLine.append("INSERT INTO `store_information`(`ID`," + "`STORE_NAME`," + "`STORE_CHAIN`,"
-					+ "`ADDRESS_1`," + "`ADDRESS_2`," + "`ADDRESS_3`," + "`ZIP_CODE`," + "`CITY`," + "`COUNTRY`,"
-					+ "`STATISTICS_ENABLED`) " + "VALUES ( ");
-
-			completeLine.append("'").append(storeInfo.getID()).append("',");
-			completeLine.append("'").append(storeInfo.getSTORE_NAME()).append("',");
-			completeLine.append("'").append(storeInfo.getSTORE_CHAIN()).append("',");
-			completeLine.append("'").append(storeInfo.getADDRESS_1()).append("',");
-			completeLine.append("'").append(storeInfo.getADDRESS_2()).append("',");
-			completeLine.append("'").append(storeInfo.getADDRESS_3()).append("',");
-			completeLine.append("'").append(storeInfo.getZIP_CODE()).append("',");
-			completeLine.append("'").append(storeInfo.getCITY()).append("',");
-			completeLine.append("'").append(storeInfo.getCOUNTRY()).append("',");
-			completeLine.append(storeInfo.getSTATIC_ENABLED()).append(")");
-			
-			completeLine.append(" ON DUPLICATE KEY UPDATE ");
-			completeLine.append("`STORE_NAME` = " + "'").append(storeInfo.getSTORE_NAME()).append("',");
-			completeLine.append("`STORE_CHAIN` = " + "'").append(storeInfo.getSTORE_CHAIN()).append("',");
-			completeLine.append("`ADDRESS_1` = " + "'").append(storeInfo.getADDRESS_1()).append("',");
-			completeLine.append("`ADDRESS_2` = " + "'").append(storeInfo.getADDRESS_2()).append("',");
-			completeLine.append("`ADDRESS_3` = " + "'").append(storeInfo.getADDRESS_3()).append("',");
-			completeLine.append("`ZIP_CODE` = " + "'").append(storeInfo.getZIP_CODE()).append("',");
-			
-			completeLine.append("`CITY` = " + "'").append(storeInfo.getCITY()).append("',");
-			completeLine.append("`COUNTRY` = " + "'").append(storeInfo.getCOUNTRY()).append("',");
-			completeLine.append("`STATISTICS_ENABLED` = ").append(storeInfo.getSTATIC_ENABLED()).append(";");
-	
-			PSFileExportStoreInfoConfiguration.println(completeLine.toString());
-			PSFileExportStoreInfoConfiguration.flush();
-		}
-
-		PSFileExportStoreInfoConfiguration.close();
-
-	}
-
-	public void createFileExportSQLStickerSizeConfiguration(List<StickerSize> lstStickerSizeConfiguration) {
-
-		PrintStream PSFileExportSQLStickerSizeConfiguration = null;
-		int i = 0;
-
-		StringBuilder truncateLine = new StringBuilder();
-		truncateLine.append("TRUNCATE table stickersize;");
-
-		try {
-			try {
-				PSFileExportSQLStickerSizeConfiguration = new PrintStream(
-						new BufferedOutputStream(new FileOutputStream(this.file.getPath(), true)), true, encoding);
-				PSFileExportSQLStickerSizeConfiguration.println(truncateLine.toString());
-				PSFileExportSQLStickerSizeConfiguration.flush();
-			} catch (UnsupportedEncodingException ex) {
-				System.out.println("UnsupportedEncodingException " + file.getName());
-
-			}
-		} catch (FileNotFoundException ex) {
-			System.out.println("FileNotFoundException " + file.getName());
-
-		}
-
-		for (StickerSize stickerSizeConfiguration : lstStickerSizeConfiguration) {
-
-			i = i + 1;
-
-			StringBuilder completeLine = new StringBuilder();
-
-			completeLine.append("REPLACE INTO `stickersize`(`ID`," + "`NAME`," + "`HIGHT`," + "`WIDTH`) " + "VALUES ( ");
-
-			// completeLine.append("'").append(trx.getID()).append("',");
-			completeLine.append("'").append(stickerSizeConfiguration.getID()).append("',");
-			completeLine.append("'").append(stickerSizeConfiguration.getNAME()).append("',");
-			completeLine.append("'").append(stickerSizeConfiguration.getHIGHT()).append("',");
-			completeLine.append("'").append(stickerSizeConfiguration.getWIDTH()).append("');");
-
-			// trx.setTRXIQOFFSET("NULL");
-
-			PSFileExportSQLStickerSizeConfiguration.println(completeLine.toString());
-			PSFileExportSQLStickerSizeConfiguration.flush();
-		}
-
-		PSFileExportSQLStickerSizeConfiguration.close();
-
-	}
-
-	public void createFileExportSQLPrintModelConfiguration(List<PrintModelConfiguration> lstPrintModelConfiguration) {
-
-		PrintStream PSFileExportSQLPrintModelConfiguration = null;
-		int i = 0;
-
-		StringBuilder truncateLine = new StringBuilder();
-		truncateLine.append("TRUNCATE table printmodelconfiguration;");
-
-		try {
-			try {
-				PSFileExportSQLPrintModelConfiguration = new PrintStream(
-						new BufferedOutputStream(new FileOutputStream(this.file.getPath(), true)), true, encoding);
-				PSFileExportSQLPrintModelConfiguration.println(truncateLine.toString());
-				PSFileExportSQLPrintModelConfiguration.flush();
-			} catch (UnsupportedEncodingException ex) {
-				System.out.println("UnsupportedEncodingException " + file.getName());
-
-			}
-		} catch (FileNotFoundException ex) {
-			System.out.println("FileNotFoundException " + file.getName());
-
-		}
-
-		for (PrintModelConfiguration printModelConfiguration : lstPrintModelConfiguration) {
-
-			i = i + 1;
-
-			StringBuilder completeLine = new StringBuilder();
-
-			completeLine.append("REPLACE INTO `printmodelconfiguration`(`ID`," + "`PRINTHOST_ID`," + "`DEFAULT_MODEL`,"
-					+ "`MODEL`," + "`PRINTER`," + "`STICKERSIZE_ID`) " + "VALUES ( ");
-
-			// completeLine.append("'").append(trx.getID()).append("',");
-			completeLine.append("'").append(printModelConfiguration.getID()).append("',");
-			completeLine.append("'").append(printModelConfiguration.getPRINT_HOST_ID()).append("',");
-			completeLine.append("'").append(printModelConfiguration.getDEFAULT_MODEL()).append("',");
-			completeLine.append("'").append(printModelConfiguration.getMODEL()).append("',");
-			completeLine.append("'").append(printModelConfiguration.getPRINTER()).append("',");
-			completeLine.append("'").append(printModelConfiguration.getSTICKERSIZE_ID()).append("');");
-
-			// trx.setTRXIQOFFSET("NULL");
-
-			PSFileExportSQLPrintModelConfiguration.println(completeLine.toString());
-			PSFileExportSQLPrintModelConfiguration.flush();
-		}
-
-		PSFileExportSQLPrintModelConfiguration.close();
-
-	}
-
-	public void createFileExportSQLPrintHostConfiguration(List<PrintHostConfiguration> lstPrintHostConfiguration) {
-
-		PrintStream PSFileExportSQLPrintHostConfiguration = null;
-		int i = 0;
-
-		StringBuilder truncateLine = new StringBuilder();
-		truncateLine.append("TRUNCATE table printhostconfiguration;");
-
-		try {
-			try {
-				PSFileExportSQLPrintHostConfiguration = new PrintStream(
-						new BufferedOutputStream(new FileOutputStream(this.file.getPath(), true)), true, encoding);
-				PSFileExportSQLPrintHostConfiguration.println(truncateLine.toString());
-				PSFileExportSQLPrintHostConfiguration.flush();
-			} catch (UnsupportedEncodingException ex) {
-				System.out.println("UnsupportedEncodingException " + file.getName());
-
-			}
-		} catch (FileNotFoundException ex) {
-			System.out.println("FileNotFoundException " + file.getName());
-
-		}
-
-		for (PrintHostConfiguration printHostConfiguration : lstPrintHostConfiguration) {
-
-			i = i + 1;
-
-			StringBuilder completeLine = new StringBuilder();
-
-			completeLine.append("INSERT INTO `printhostconfiguration`(`ID`," + "`HOSTNAME`," + "`LINK_DEPARTMENT`,"
-					+ "`ALIAS`) " + "VALUES ( ");
-
-			// completeLine.append("'").append(trx.getID()).append("',");
-			completeLine.append("'").append(printHostConfiguration.getID()).append("',");
-			completeLine.append("'").append(printHostConfiguration.getHOSTNAME()).append("',");
-			completeLine.append("'").append(printHostConfiguration.getSUBCELL()).append("',");
-			completeLine.append("'").append(printHostConfiguration.getALIAS()).append("');");
-
-			// trx.setTRXIQOFFSET("NULL");
-
-			PSFileExportSQLPrintHostConfiguration.println(completeLine.toString());
-			PSFileExportSQLPrintHostConfiguration.flush();
-		}
-
-		PSFileExportSQLPrintHostConfiguration.close();
-
-	}
 
 	public void createFileExportSQLTRX(List<Transceiver> lstTransceivers) {
 		PrintStream PSFileExportSQLTRX = null;
@@ -439,7 +215,7 @@ public class OperationOnFile {
 			StringBuilder completeLine = new StringBuilder();
 
 			completeLine.append("INSERT INTO `transceiver`(`ID`," + "`TRXBSNAMEREF`," + "`TRXPORTNUM`,"
-					+ "`TRXCABLEINDEX`," + "`TRXHWID`) " + "VALUES ( ");
+					+ "`TRXCABLEINDEX`," + "`TRXHWID`," + "`TRXFAILTIME`) " + "VALUES ( ");
 
 			// completeLine.append("'").append(trx.getID()).append("',");
 			completeLine.append("'").append(i).append("',");
@@ -447,6 +223,7 @@ public class OperationOnFile {
 			completeLine.append("'").append(trx.getTRXPORTNUM()).append("',");
 			completeLine.append("'").append(trx.getTRXCABLEINDEX()).append("',");
 			completeLine.append("'").append(trx.getTRXHWID()).append("');");
+			completeLine.append("'1970-01-01 01:00:00');");
 
 			// trx.setTRXIQOFFSET("NULL");
 
@@ -484,14 +261,15 @@ public class OperationOnFile {
 			StringBuilder completeLine = new StringBuilder();
 
 			completeLine.append("INSERT INTO `transceiver`(`ID`," + "`TRXBSNAMEREF`," + "`TRXPORTNUM`,"
-					+ "`TRXCABLEINDEX`," + "`TRXHWID`)"
+					+ "`TRXCABLEINDEX`," + "`TRXHWID`," + "`TRXFAILTIME`)"
 
 					+ "VALUES ( ");
 			completeLine.append("'").append(i).append("',");
 			completeLine.append("'").append(trx.getTRXBSNAMEREF()).append("',");
 			completeLine.append("'").append(trx.getTRXPORTNUM()).append("',");
 			completeLine.append("'").append(trx.getTRXCABLEINDEX()).append("',");
-			completeLine.append("'").append(trx.getTRXHWID()).append("');");
+			completeLine.append("'").append(trx.getTRXHWID()).append("',");
+			completeLine.append("'1970-01-01 01:00:00');");
 
 			// trx.setTRXIQOFFSET("NULL");
 
@@ -504,6 +282,51 @@ public class OperationOnFile {
 		PSFileExportSQLTRX.close();
 
 	}
+
+	public void createFileExportSQLTRXLocation(List<Transceiver> lstTransceivers) {
+		PrintStream PSFileExportSQLTRX = null;
+		StringBuilder truncateLine = new StringBuilder();
+		truncateLine.append("TRUNCATE table transceiver_location;");
+
+		try {
+			try {
+				PSFileExportSQLTRX = new PrintStream(
+						new BufferedOutputStream(new FileOutputStream(this.file.getPath(), true)), true, encoding);
+				PSFileExportSQLTRX.println(truncateLine.toString());
+				PSFileExportSQLTRX.flush();
+			} catch (UnsupportedEncodingException ex) {
+				System.out.println("UnsupportedEncodingException " + file.getName());
+
+			}
+		} catch (FileNotFoundException ex) {
+			System.out.println("FileNotFoundException " + file.getName());
+
+		}
+
+
+
+		for (Transceiver trx : lstTransceivers) {
+			StringBuilder completeLine = new StringBuilder();
+
+			completeLine.append("INSERT INTO `transceiver_location`(`TRXHWID`," + "`LOCATION`) VALUES ( ");
+			completeLine.append("'").append(trx.getTRXHWID()).append("',");
+
+		/*	if(trx.getTRXLOCATION().equalsIgnoreCase("")){
+				completeLine.append("NULL");
+			}else*/
+			completeLine.append("'").append(trx.getTRXLOCATION()).append("');");
+
+			// trx.setTRXIQOFFSET("NULL");
+
+			PSFileExportSQLTRX.println(completeLine.toString());
+			PSFileExportSQLTRX.flush();
+
+		}
+
+		PSFileExportSQLTRX.close();
+
+	}
+
 
 	public void createFileExportSQLSubcells(List<Subcell> lstSubcells) {
 		PrintStream PSFileExportSQLSubcells = null;
@@ -596,6 +419,46 @@ public class OperationOnFile {
 		PSFileExportSQLBaseStations.close();
 
 	}
+
+
+	public void createFileExportSQLGeoStore(List<GeoStore> lstGeoStore) {
+		PrintStream PSFileExportSQLBaseStations = null;
+		StringBuilder truncateLine = new StringBuilder();
+		truncateLine.append("TRUNCATE table geo_store;");
+		try {
+			try {
+				PSFileExportSQLBaseStations = new PrintStream(
+						new BufferedOutputStream(new FileOutputStream(this.file.getPath(), true)), true, encoding);
+				PSFileExportSQLBaseStations.println(truncateLine.toString());
+				PSFileExportSQLBaseStations.flush();
+			} catch (UnsupportedEncodingException ex) {
+				System.out.println("UnsupportedEncodingException " + file.getName());
+
+			}
+		} catch (FileNotFoundException ex) {
+			System.out.println("FileNotFoundException " + file.getName());
+
+		}
+
+		for (GeoStore gs : lstGeoStore) {
+			StringBuilder completeLine = new StringBuilder();
+
+
+			completeLine.append("INSERT INTO `geo_store`(`ID`,`MAP`,`CREATED`,`ROUTING`) VALUES ( ");
+			completeLine.append("'").append(gs.getID()).append("',");
+			completeLine.append("'").append(gs.getMAP()).append("',");
+			completeLine.append("'").append(gs.getCREATED()).append("',");
+			completeLine.append("'").append(gs.getROUTING()).append("');");
+
+			PSFileExportSQLBaseStations.println(completeLine.toString());
+			PSFileExportSQLBaseStations.flush();
+		}
+
+		PSFileExportSQLBaseStations.close();
+
+	}
+
+
 
 	public void createFileExportSQLSubcellTRXMAP(List<SubcellTRXMap> lstSubcellTRXMAP) {
 		PrintStream PSFileExportSQLSubcellTRXMAP = null;

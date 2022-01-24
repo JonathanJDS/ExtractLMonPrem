@@ -21,32 +21,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.jdbc.ScriptRunner;
+import com.pricer.*;
 import org.apache.log4j.Logger;
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Wini;
-
-import com.pricer.BaseStation;
-import com.pricer.Item;
-import com.pricer.LinkDepartment;
-import com.pricer.PrintHostConfiguration;
-import com.pricer.PrintModelConfiguration;
-import com.pricer.Start;
-import com.pricer.StickerSize;
-import com.pricer.StoreInfo;
-import com.pricer.Subcell;
-import com.pricer.SubcellTRXMap;
-import com.pricer.Transceiver;
-
-
-
-
 
 
 public class OperationOnDBSource {
 
 	private Connection connectionSource;
-	private Connection connectionTarget;
+	//private Connection connectionTarget;
 	private Wini ini;
 	private String hostNameSource;
 	private String username;
@@ -59,7 +43,7 @@ public class OperationOnDBSource {
 
 		super();
 
-		try {
+/*		try {
 			this.ini = new Wini(new File("preference.ini"));
 		} catch (InvalidFileFormatException e1) {
 			
@@ -71,12 +55,18 @@ public class OperationOnDBSource {
 			logger.fatal("Unable to Read ini File : preference.ini ==> " + e1.getMessage());
 			logger.fatal("Exit Application ...");
 			System.exit(1);
-		}
+		}*/
 
-		this.hostNameSource = ini.get("MYSQL_SOURCE", "HOSTNAME", String.class);
+/*		this.hostNameSource = ini.get("MYSQL_SOURCE", "HOSTNAME", String.class);
 		this.portnumber = ini.get("MYSQL_SOURCE", "PORTNAME", String.class);
 		this.username = ini.get("MYSQL_SOURCE", "USER", String.class);
-		this.password = ini.get("MYSQL_SOURCE", "PASSWORD", String.class);
+		this.password = ini.get("MYSQL_SOURCE", "PASSWORD", String.class);*/
+
+		this.hostNameSource = "localhost";
+		this.portnumber = "3306";
+		this.username = "root";
+		this.password = "";
+
 
 		System.out.println("operation on DB Source initialisation.....");
 		JDBCConnector jdbcconnectorSource = new JDBCConnector(this.hostNameSource, this.username, this.password, this.portnumber);
@@ -200,7 +190,7 @@ public class OperationOnDBSource {
 //
 //	}
 
-	
+/*
 	public void importData(String resultDirectory, String sqlFile) {
 		
 		
@@ -218,7 +208,7 @@ public class OperationOnDBSource {
 			e.printStackTrace();
 		}
 		
-	}
+	}*/
 	
 	
 	
@@ -474,6 +464,67 @@ public class OperationOnDBSource {
 		return lstPrintHostConfiguration;
 	}
 
+
+	public List<GeoStore> getGeoStoreList(String request) {
+
+		List<GeoStore> lstGeoStore = new ArrayList<GeoStore>();
+		GeoStore geoStore;
+
+		Statement st = null;
+		ResultSet rs = null;
+
+		try{
+			st = connectionSource.createStatement();
+			rs = st.executeQuery(request);
+
+
+			while (rs.next()) {
+
+				geoStore = new GeoStore();
+				geoStore.setID(rs.getString("ID"));
+				geoStore.setMAP(rs.getString("MAP"));
+				geoStore.setCREATED(rs.getString("CREATED"));
+				geoStore.setROUTING(rs.getString("ROUTING"));
+				lstGeoStore.add(geoStore);
+
+			}
+
+
+			} catch (SQLException e) {
+
+				System.out.println("error during select request SQLException" + e.getMessage());
+
+				e.printStackTrace();
+			}
+
+		finally {
+				if (rs != null) {
+					try {
+						rs.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+						System.out.println("error during select request SQLException" + e.getMessage());
+					}
+				}
+
+				if (st != null) {
+
+					try {
+						st.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+						System.out.println("error during select request SQLException" + e.getMessage());
+
+					}
+				}
+
+			}
+			return lstGeoStore;
+
+		}
+
+
+
 	public List<BaseStation> getBaseStationList(String request) {
 
 		List<BaseStation> lstBaseStation = new ArrayList<BaseStation>();
@@ -534,8 +585,8 @@ public class OperationOnDBSource {
 		return lstBaseStation;
 
 	}
-	
-	
+
+
 	public List<Item> getItemList(String request) {
 
 		List<Item> lstItem = new ArrayList<Item>();
@@ -552,9 +603,9 @@ public class OperationOnDBSource {
 
 			while (rs.next()) {
 
-			
+
 				item = new Item();
-				
+
 				item.setArrow(rs.getString("ARROW"));
 				item.setBox(rs.getString("BOX"));
 				item.setCircle(rs.getString("CIRCLE"));
@@ -607,12 +658,12 @@ public class OperationOnDBSource {
 				item.setDateDeliv(rs.getString("DATE_DELIV"));
 				item.setItemStatus(rs.getString("ITEM_STATUS"));
 
-				
+
 				lstItem.add(item);
 			}
 
 		} catch (SQLException e) {
-			
+
 			System.out.println("error during select request SQLException" + e.getMessage());
 
 			e.printStackTrace();
@@ -729,7 +780,7 @@ public class OperationOnDBSource {
 				//subcell.setSUBCELLTRANSMISSIONTIME(rs.getString("SUBCELLTRANSMISSIONTIME"));
 				//subcell.setSUBCELLCREATIONTIME(rs.getString("SUBCELLCREATIONTIME"));
 				//subcell.setLASTCALIBRATIONTIME(rs.getString("LASTCALIBRATIONTIME"));
-				//subcell.setSUBCELLALIAS(rs.getString("SUBCELLALIAS"));
+				subcell.setSUBCELLALIAS(rs.getString("SUBCELLALIAS"));
 				lstSubcell.add(subcell);
 			}
 
@@ -783,7 +834,7 @@ public class OperationOnDBSource {
 				// id+=1;
 				subcellTRXMap = new SubcellTRXMap();
 
-				subcellTRXMap.setTRXID((rs.getString("TRXID")));
+				subcellTRXMap.setTRXID((rs.getString("ID")));
 				subcellTRXMap.setSCMSUBCELLID((rs.getString("SCMSUBCELLID")));
 				subcellTRXMap.setTRXPORTNUM(rs.getString("TRXPORTNUM"));
 				lstSubcellTRXMap.add(subcellTRXMap);
@@ -955,11 +1006,12 @@ public class OperationOnDBSource {
 				// id+=1;
 				trx = new Transceiver();
 
-				trx.setID(rs.getString("TRXID"));
+				trx.setID(rs.getString("ID"));
 				trx.setTRXBSNAMEREF(rs.getString("TRXBSNAMEREF"));
 				trx.setTRXPORTNUM(rs.getString("TRXPORTNUM"));
 				trx.setTRXCABLEINDEX("1");
 				trx.setTRXHWID(rs.getString("TRXHWID"));
+				trx.setTRXLOCATION(rs.getString("TRXLOCATION"));
 
 				lstTRXList.add(trx);
 
@@ -1076,7 +1128,7 @@ public class OperationOnDBSource {
 
 		// define the new request "update" for setting
 
-//select TRXID,TRXBSNAMEREF,TRXPORTNUM,TRXHWID from TRANSCEIVER;	
+//select TRXID,TRXBSNAMEREF,TRXPORTNUM,TRXHWID from TRANSCEIVER;
 		List<Transceiver> lstTRXList = new ArrayList<Transceiver>();
 		Transceiver trx;
 		// int id=0;
@@ -1112,7 +1164,7 @@ public class OperationOnDBSource {
 			}
 
 		} catch (SQLException e) {
-			
+
 			System.out.println("error during update request SQLException" + e.getMessage());
 
 			e.printStackTrace();
@@ -1232,7 +1284,7 @@ public class OperationOnDBSource {
 			}
 
 		} catch (SQLException e) {
-			
+
 			System.out.println("error during update request SQLException" + e.getMessage());
 
 			e.printStackTrace();
@@ -1303,7 +1355,7 @@ public class OperationOnDBSource {
 			}
 
 		} catch (SQLException e) {
-			
+
 			System.out.println("error during update request SQLException" + e.getMessage());
 
 			e.printStackTrace();
@@ -1335,24 +1387,24 @@ public class OperationOnDBSource {
 		PSFileExportLink.close();
 
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	public void createFileExportLinkFromMysqlDump(String tableName) {
-		
+
 		String FolderForExtractedData = ini.get("SERVER", "PRICER_RESULT_FOLDER");
 		String cmdLine  = "mysqldump.exe -u " + username + " -P " + portnumber + " pricer" + " " + tableName ;
 		String resultFile = FolderForExtractedData + "\\" + tableName + ".sql";
 		logger.info("mysqldump for table : " + tableName);
 		ExecuteDump(cmdLine, resultFile);
-		logger.info("mysqldump for table " + tableName + " ok ");	
-		
+		logger.info("mysqldump for table " + tableName + " ok ");
+
 	}
 
-	
-	
+
+
 
 	public void createFileExportLink(String request, String filename) {
 
@@ -1388,7 +1440,7 @@ public class OperationOnDBSource {
 				completeLine.append("9999 ")
 				.append(rs.getString("item.itemid"))
 				.append(" 1 0 |N| 93 0 |")
-				.append(rs.getString("PRICERLABEL.PLBARCODE")).append("|")				
+				.append(rs.getString("PRICERLABEL.PLBARCODE")).append("|")
 				.append(" 9100 0 |").append(rs.getString("PRICERLABEL.PLHOMESUBCELLID"))
 				.append("|,");
 				PSFileExportLink.println(completeLine.toString());
@@ -1397,7 +1449,7 @@ public class OperationOnDBSource {
 			}
 
 		} catch (SQLException e) {
-			
+
 			System.out.println("error during update request SQLException" + e.getMessage());
 
 			e.printStackTrace();

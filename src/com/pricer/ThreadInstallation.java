@@ -34,9 +34,6 @@ import org.ini4j.Wini;
 import com.database.OperationOnDBSource;
 import com.file.OperationOnFile;
 
-import oshi.SystemInfo;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.software.os.OperatingSystem;
 
 /**
  *
@@ -93,7 +90,7 @@ public class ThreadInstallation extends Thread{
 
 			// getting hardware machin info
 
-			DisplayMachinInfo();
+			//DisplayMachinInfo();
 
 			/* Checking Available Disk Size */
 			logger.info("Checking Available Disk Space...");
@@ -438,7 +435,7 @@ public class ThreadInstallation extends Thread{
 			}
 
 			System.out.println("on continue");
-			System.out.println("on check à nouveau si le service pricermysql est stoppé, on essaie de le démarrer ");
+			System.out.println("on check ï¿½ nouveau si le service pricermysql est stoppï¿½, on essaie de le dï¿½marrer ");
 
 			if (status.equalsIgnoreCase("Stopped") == true) {
 				logger.fatal("Trying to start service : pricermysql");
@@ -591,7 +588,7 @@ public class ThreadInstallation extends Thread{
 			}
 
 			System.out.println(
-					"on check à nouveau si le service PricerFlashSchedulerService est stoppé, on essaie de le démarrer ");
+					"on check ï¿½ nouveau si le service PricerFlashSchedulerService est stoppï¿½, on essaie de le dï¿½marrer ");
 
 			if (status.equalsIgnoreCase("Stopped") == true) {
 				logger.fatal("Trying to start service : PricerFlashSchedulerService");
@@ -757,7 +754,7 @@ public class ThreadInstallation extends Thread{
 				}
 
 				
-				// demarrage du service pricerServer pour la génération du uuid
+				// demarrage du service pricerServer pour la gï¿½nï¿½ration du uuid
 					
 				
 				
@@ -906,7 +903,7 @@ public class ThreadInstallation extends Thread{
 				}
 
 				System.out.println("on continue");
-				System.out.println("démarrage du service pricerserver ");
+				System.out.println("dï¿½marrage du service pricerserver ");
 
 				status="Stopped";
 				
@@ -1088,7 +1085,7 @@ public class ThreadInstallation extends Thread{
 			
 
 				System.out.println("on continue");
-				System.out.println("démarrage du service pricerserver ");
+				System.out.println("dï¿½marrage du service pricerserver ");
 				
 				status="Stopped";
 				
@@ -1475,7 +1472,7 @@ e.printStackTrace();
 	 * Unzip it
 	 * 
 	 * @param zipFile input zip file
-	 * @param output  zip file output folder
+
 	 */
 	public static boolean unZipIt(String zipFile, String outputFolder) {
 
@@ -1564,7 +1561,7 @@ e.printStackTrace();
 
 	}
 
-	private static void DisplayMachinInfo() {
+/*	private static void DisplayMachinInfo() {
 		
 		String computerName;
 		DecimalFormat df = new DecimalFormat("#.##");
@@ -1590,7 +1587,7 @@ e.printStackTrace();
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 	
 	
 	
